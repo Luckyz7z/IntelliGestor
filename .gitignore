@@ -1,0 +1,11 @@
+# Saídas de compilação e pacotes locais
+*.class
+*.jar
+*.zip
+build/
+out/
+
+# Arquivos do sistema e de IDEs
+.DS_Store
+.idea/
+*.iml
