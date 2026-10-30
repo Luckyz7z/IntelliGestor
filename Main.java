@@ -17,8 +17,8 @@ public final class Main extends JPanel implements MouseListener, MouseMotionList
     static final String FONTE = escolherFonte();
     static final Color VERDE = new Color(7, 75, 53), CREME = new Color(255, 249, 222);
     static final Color TINTA = new Color(20, 60, 43), OURO = new Color(255, 194, 47);
-    static final String[] TITULOS = {"", "QUEBRA-CABEÇA", "JOGO DA MEMÓRIA", "COLETA SELETIVA", "ENCONTRE AS DIFERENÇAS"};
-    static final Color[] CORES = {new Color(73, 156, 81), new Color(29, 155, 205), new Color(241, 178, 35), new Color(228, 84, 70)};
+    static final String[] TITULOS = {"", "QUEBRA-CABEÇA", "JOGO DA MEMÓRIA", "COLETA SELETIVA"};
+    static final Color[] CORES = {new Color(73, 156, 81), new Color(29, 155, 205), new Color(241, 178, 35)};
     final String[] nomesLixo = {"PAPEL", "PLÁSTICO", "VIDRO", "METAL", "ORGÂNICO", "PILHAS", "LÂMPADAS"};
     final String[] residuosOriginais = {"JORNAL", "GARRAFA", "POTE", "LATA", "CASCA", "PILHA", "LAMPADA", "CADERNO", "SACOLA", "VIDRO", "LATINHA", "BANANA", "BATERIA", "LAMPADA"};
     final Random sorteio = new Random();
@@ -29,10 +29,9 @@ public final class Main extends JPanel implements MouseListener, MouseMotionList
     int hoverX = -1, hoverY = -1;
     String mensagem = "";
     final int[] pecas = new int[9], cartas = new int[12];
-    final boolean[] pares = new boolean[12], achadas = new boolean[5];
+    final boolean[] pares = new boolean[12];
     int[] tiposLixo = {0, 1, 2, 3, 4, 5, 6, 0, 1, 2, 3, 4, 5, 6};
     String[] objetos = residuosOriginais.clone();
-    final int[][] locaisDiferenca = {{195,470},{435,410},{560,445},{400,495},{110,345}};
     final Rectangle botaoVoltar = new Rectangle(30, 22, 58, 52);
     final Rectangle botaoCasa = new Rectangle(1014, 22, 58, 52);
     final Rectangle botaoPrincipal = new Rectangle(340, 568, 420, 76);
@@ -76,14 +75,12 @@ public final class Main extends JPanel implements MouseListener, MouseMotionList
         pontos = acertos = erros = 0; arrastando = -1;
         tiposLixo = new int[]{0,1,2,3,4,5,6,0,1,2,3,4,5,6}; objetos = residuosOriginais.clone();
     }
-    void iniciarDiferencas() { Arrays.fill(achadas, false); acertos = erros = 0; }
     void iniciarFase(int numero) {
-        if (numero < 1 || numero > 4 || numero > progresso + 1) return;
+        if (numero < 1 || numero > 3 || numero > progresso + 1) return;
         fase = numero; segundos = relogioContador = mensagemTempo = 0; mensagem = ""; arrastando = -1;
         if (fase == 1) iniciarQuebraCabeca();
         if (fase == 2) iniciarMemoria();
         if (fase == 3) iniciarColeta();
-        if (fase == 4) iniciarDiferencas();
         tela = 2;
     }
     void concluir() { progresso = Math.max(progresso, fase); tela = 3; arrastando = -1; }
@@ -121,7 +118,6 @@ public final class Main extends JPanel implements MouseListener, MouseMotionList
             if (fase == 1) desenharQuebraCabeca(g);
             if (fase == 2) desenharMemoria(g);
             if (fase == 3) desenharColeta(g);
-            if (fase == 4) desenharDiferencas(g);
             if (mensagemTempo > 0) {
                 painel(g, 235, 661, 630, 38, new Color(255,250,218));
                 texto(g, mensagem, 550, 686, 15, VERDE, true);
@@ -210,23 +206,23 @@ public final class Main extends JPanel implements MouseListener, MouseMotionList
         texto(g,"Aprenda brincando a cuidar do planeta!",550,258,22,TINTA,true);
         EcoArt.planet(g,550,438,119);
         botao(g,botaoPrincipal,"INICIAR","play");
-        texto(g,"4 desafios · Um planeta melhor",550,678,16,CREME,true);
+        texto(g,"3 desafios · Um planeta melhor",550,678,16,CREME,true);
         Rectangle ajuda=new Rectangle(30,22,58,52); painel(g,ajuda.x,ajuda.y,ajuda.width,ajuda.height,VERDE);
         g.setColor(CREME);g.setStroke(new BasicStroke(4));g.drawOval(46,36,26,26);texto(g,"?",59,57,23,CREME,true);
     }
-    Rectangle faseCard(int i) { return new Rectangle(42+i*259,177,239,382); }
+    Rectangle faseCard(int i) { return new Rectangle(171+i*259,177,239,382); }
     void selecao(Graphics2D g) {
         cabecalho(g,"ESCOLHA A FASE");
         painel(g,155,98,790,49,new Color(255,252,231,240));
         texto(g,"Complete as fases e ajude a cidade a se tornar mais sustentável!",550,130,18,TINTA,true);
-        for(int i=0;i<4;i++) {
+        for(int i=0;i<3;i++) {
             Rectangle r=faseCard(i); int x=r.x; boolean livre=i<=progresso;
             painel(g,x,r.y,r.width,r.height,CORES[i]);
             g.setColor(CORES[i].darker()); g.fillOval(x+95,190,49,49);
             titulo(g,""+(i+1),x+119,226,31,Color.WHITE);
             painel(g,x+13,251,213,176,CREME);
             Graphics2D q=(Graphics2D)g.create();q.clip(new RoundRectangle2D.Double(x+17,255,205,168,15,15));
-            if(i==0 || i==3) {
+            if(i==0) {
                 q.drawImage(paisagem,x+17,255,205,168,null);
                 if(i==0) {q.setColor(CREME);q.setStroke(new BasicStroke(2));q.drawLine(x+119,255,x+119,423);q.drawLine(x+17,339,x+222,339);}
                 else {q.setColor(VERDE);q.setStroke(new BasicStroke(8));q.drawOval(x+119,323,55,55);q.drawLine(x+167,374,x+191,397);q.setColor(new Color(226,251,255,150));q.fillOval(x+123,327,47,47);}
@@ -234,7 +230,7 @@ public final class Main extends JPanel implements MouseListener, MouseMotionList
                 for(int j=0;j<4;j++) {int cx=x+23+j%2*99,cy=263+j/2*77; painel(q,cx,cy,91,69,j%3==0?new Color(87,184,211):Color.WHITE);if(j%3==0) EcoArt.leaf(q,cx+44,cy+52,33,-.4,VERDE);else ItemArt.memory(q,cx+12,cy+5,67,54,j==1?1:0);}
             } else {for(int j=0;j<3;j++)ItemArt.bin(q,x+24+j*64,314,58,93,j);ItemArt.waste(q,x+83,262,55,51,"GARRAFA");}
             q.dispose();
-            String[] a={"QUEBRA-CABEÇA","JOGO DA","COLETA","ENCONTRE AS"};String[] b={"","MEMÓRIA","SELETIVA","DIFERENÇAS"};
+            String[] a={"QUEBRA-CABEÇA","JOGO DA","COLETA"};String[] b={"","MEMÓRIA","SELETIVA"};
             titulo(g,a[i],x+119,461,23,Color.WHITE);if(!b[i].isEmpty())titulo(g,b[i],x+119,489,23,Color.WHITE);
             if(livre) for(int j=0;j<3;j++) EcoArt.star(g,x+83+j*36,527,14,i<progresso?OURO:new Color(255,255,231,150));
             else {cadeado(g,x+119,521);texto(g,"Conclua a fase anterior",x+119,549,11,Color.WHITE,true);}
@@ -243,8 +239,8 @@ public final class Main extends JPanel implements MouseListener, MouseMotionList
         texto(g,"PROGRESSO GERAL",163,621,14,VERDE,false);
         g.setColor(new Color(184,211,153));g.fillRoundRect(163,635,706,15,15,15);
         g.setPaint(new GradientPaint(0,635,new Color(130,196,78),0,650,new Color(65,153,65)));
-        g.fillRoundRect(163,635,706*progresso/4,15,15,15);g.setColor(VERDE);g.drawRoundRect(163,635,706,15,15,15);
-        texto(g,(progresso*3)+"/12",929,648,18,VERDE,true);
+        g.fillRoundRect(163,635,706*progresso/3,15,15,15);g.setColor(VERDE);g.drawRoundRect(163,635,706,15,15,15);
+        texto(g,(progresso*3)+"/9",929,648,18,VERDE,true);
     }
     static void cadeado(Graphics2D g,int x,int y) {g.setStroke(new BasicStroke(3));g.setColor(new Color(99,70,33,180));g.drawRoundRect(x-7,y-12,14,17,12,12);g.fillRoundRect(x-12,y-1,24,20,5,5);g.setColor(CREME);g.fillOval(x-2,y+5,4,5);}
     void instrucao(Graphics2D g,String t) {
@@ -298,11 +294,9 @@ public final class Main extends JPanel implements MouseListener, MouseMotionList
     }
     Rectangle residuoRect(int i) {return new Rectangle(57+i%7*142,172+i/7*110,132,99);}
     Rectangle lixeiraRect(int i) {return new Rectangle(45+i*146,413,132,190);}
-    String nomeVisivel(String nome) {return nome.equals("LAMPADA")?"LÂMPADA":nome;}
     void cartaoResiduo(Graphics2D g,int x,int y,int w,int h,String nome,boolean drag) {
         painel(g,x,y,w,h,drag?new Color(255,247,191):new Color(255,253,237));
-        ItemArt.waste(g,x+24,y+5,w-48,h-28,nome);
-        texto(g,nomeVisivel(nome),x+w/2,y+h-9,11,VERDE,true);
+        ItemArt.waste(g,x+20,y+5,w-40,h-10,nome);
     }
     void desenharColeta(Graphics2D g) {
         instrucao(g,"Arraste cada resíduo para a lixeira da mesma categoria.");
@@ -318,42 +312,29 @@ public final class Main extends JPanel implements MouseListener, MouseMotionList
         texto(g,"Acertos: "+acertos+"/14    ·    Erros: "+erros+"    ·    Pilhas e lâmpadas exigem coleta especial.",550,637,15,TINTA,true);
         if(arrastando>=0)cartaoResiduo(g,cursorX-60,cursorY-45,120,90,objetos[arrastando],true);
     }
-    Point diferencaPoint(int i) {return new Point(560+locaisDiferenca[i][0]*485/650,187+locaisDiferenca[i][1]*382/520);}
-    void desenharDiferencas(Graphics2D g) {
-        instrucao(g,"Encontre os cinco resíduos que aparecem na imagem da direita.");
-        painel(g,37,151,1026,492,CREME);
-        titulo(g,"CIDADE BEM CUIDADA",297,178,22,VERDE);titulo(g,"O QUE MUDOU?",802,178,22,VERDE);
-        imagemRedonda(g,paisagem,55,187,485,382,15);imagemRedonda(g,paisagem,560,187,485,382,15);
-        String[] problemas={"JORNAL","PILHA","GARRAFA","LATA","LAMPADA"};
-        for(int i=0;i<5;i++) {
-            Point p=diferencaPoint(i);ItemArt.waste(g,p.x-21,p.y-26,42,49,problemas[i]);
-            if(achadas[i]) {g.setColor(new Color(22,151,82));g.setStroke(new BasicStroke(4));g.drawOval(p.x-29,p.y-29,58,58);}
-        }
-        texto(g,"Problemas encontrados: "+acertos+"/5    ·    Erros: "+erros,550,609,18,VERDE,true);
-    }
     void conclusao(Graphics2D g) {
         painel(g,205,88,690,569,new Color(255,251,226,245));
         placa(g,"FASE "+fase+" CONCLUÍDA!",300,42,500);
         EcoArt.planet(g,550,294,108);
         for(int i=0;i<6;i++)EcoArt.star(g,i<3?340+(i%2)*32:760-(i%2)*32,191+(i%3)*73,i%2==0?17:12,OURO);
         titulo(g,fase==2?"MUITO BEM!":fase==3?"EXCELENTE!":"PARABÉNS!",550,454,37,VERDE);
-        String[][] frases={{},{"Você completou o quebra-cabeça","e ajudou a construir uma cidade mais sustentável!"},{"Você encontrou todos os pares","e aprendeu mais sobre o meio ambiente!"},{"Você separou corretamente os 14 resíduos","e fez a coleta seletiva!"},{"Você encontrou todas as diferenças","e identificou os problemas ambientais!"}};
+        String[][] frases={{},{"Você completou o quebra-cabeça","e ajudou a construir uma cidade mais sustentável!"},{"Você encontrou todos os pares","e aprendeu mais sobre o meio ambiente!"},{"Você separou corretamente os 14 resíduos","e fez a coleta seletiva!"}};
         texto(g,frases[fase][0],550,490,18,TINTA,true);texto(g,frases[fase][1],550,517,18,TINTA,true);
         texto(g,String.format("Tempo: %02d:%02d",segundos/60,segundos%60),550,549,14,VERDE,true);
-        botao(g,botaoPrincipal,fase<4?"CONTINUAR":"VOLTAR AO MENU","next");
+        botao(g,botaoPrincipal,fase<3?"CONTINUAR":"VOLTAR AO MENU","next");
     }
 
     public void mouseClicked(MouseEvent evento) {
         Point p=local(evento);int x=p.x,y=p.y;
         if(tela==0) {
             if(botaoPrincipal.contains(p))tela=1;
-            else if(botaoVoltar.contains(p))JOptionPane.showMessageDialog(this,"Complete as quatro fases para cuidar do planeta!\n\n1. Troque as peças para montar a paisagem.\n2. Encontre os seis pares de cartas.\n3. Arraste os 14 resíduos para suas sete lixeiras.\n4. Encontre cinco problemas na imagem da direita.\n\nPressione Esc para voltar. O progresso dura esta sessão.","Como jogar",JOptionPane.INFORMATION_MESSAGE);
+            else if(botaoVoltar.contains(p))JOptionPane.showMessageDialog(this,"Complete as três fases para cuidar do planeta!\n\n1. Troque as peças para montar a paisagem.\n2. Encontre os seis pares de cartas.\n3. Arraste os 14 resíduos para suas sete lixeiras.\n\nPressione Esc para voltar. O progresso dura esta sessão.","Como jogar",JOptionPane.INFORMATION_MESSAGE);
         } else if(botaoCasa.contains(p)&&(tela==1||tela==2)) {tela=0;arrastando=-1;}
         else if(tela==1) {
             if(botaoVoltar.contains(p))tela=0;
-            else for(int i=0;i<4;i++)if(faseCard(i).contains(p))iniciarFase(i+1);
+            else for(int i=0;i<3;i++)if(faseCard(i).contains(p))iniciarFase(i+1);
         } else if(tela==3) {
-            if(botaoPrincipal.contains(p)) {if(fase==4)tela=0;else iniciarFase(fase+1);}
+            if(botaoPrincipal.contains(p)) {if(fase==3)tela=0;else iniciarFase(fase+1);}
         } else if(tela==2) {
             if(botaoVoltar.contains(p)){voltar();return;}
             if(fase==1) {
@@ -372,11 +353,6 @@ public final class Main extends JPanel implements MouseListener, MouseMotionList
                         else esperaCartas=25;
                     }break;
                 }
-            } else if(fase==4&&new Rectangle(560,187,485,382).contains(p)) {
-                boolean encontrou=false;
-                for(int i=0;i<5;i++){Point c=diferencaPoint(i);if(!achadas[i]&&p.distance(c)<32){achadas[i]=true;acertos++;encontrou=true;avisar("Problema ambiental encontrado!");break;}}
-                if(!encontrou){erros++;avisar("Tente novamente! Observe a imagem da direita.");}
-                if(acertos==5)concluir();
             }
         }
         repaint();
@@ -401,12 +377,11 @@ public final class Main extends JPanel implements MouseListener, MouseMotionList
     public void mouseMoved(MouseEvent evento) {
         Point p=local(evento);hoverX=p.x;hoverY=p.y;
         boolean clicavel=botaoPrincipal.contains(p)&&(tela==0||tela==3)||botaoVoltar.contains(p)&&tela!=3||botaoCasa.contains(p)&&(tela==1||tela==2);
-        if(tela==1)for(int i=0;i<4;i++)clicavel|=i<=progresso&&faseCard(i).contains(p);
+        if(tela==1)for(int i=0;i<3;i++)clicavel|=i<=progresso&&faseCard(i).contains(p);
         if(tela==2) {
             if(fase==1)for(int i=0;i<9;i++)clicavel|=pecaRect(i).contains(p);
             if(fase==2)for(int i=0;i<12;i++)clicavel|=!pares[i]&&cartaRect(i).contains(p);
             if(fase==3)for(int i=acertos;i<14;i++)clicavel|=residuoRect(i).contains(p);
-            if(fase==4)clicavel|=new Rectangle(560,187,485,382).contains(p);
         }
         setCursor(Cursor.getPredefinedCursor(clicavel?Cursor.HAND_CURSOR:Cursor.DEFAULT_CURSOR));repaint();
     }
